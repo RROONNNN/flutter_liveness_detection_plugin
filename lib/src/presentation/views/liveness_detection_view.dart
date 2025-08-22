@@ -15,6 +15,7 @@ class LivenessDetectionView extends StatefulWidget {
   final bool shuffleListWithSmileLast;
   final bool showCurrentStep;
   final bool isDarkMode;
+  final Future<void> Function() ? onLivenessSuccessStep;
 
   const LivenessDetectionView({
     super.key,
@@ -23,6 +24,8 @@ class LivenessDetectionView extends StatefulWidget {
     this.isDarkMode = true,
     this.showCurrentStep = false,
     this.shuffleListWithSmileLast = true,
+    this.onLivenessSuccessStep,
+
   });
 
   @override
@@ -410,6 +413,7 @@ void _disposeCamera() async {
   }
 
   Future<void> _completeStep({required LivenessDetectionStep step}) async {
+     await widget.onLivenessSuccessStep?.call();
     if (mounted) setState(() {});
     await _stepsKey.currentState?.nextPage();
     _stopProcessing();

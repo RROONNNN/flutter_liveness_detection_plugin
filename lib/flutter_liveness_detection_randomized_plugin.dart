@@ -9,7 +9,7 @@ class FlutterLivenessDetectionRandomizedPlugin {
   List<LivenessDetectionThreshold> get thresholdConfig {
     return _thresholds;
   }
-
+      
   Future<String?> livenessDetection({
     required BuildContext context,
     required LivenessDetectionConfig config,
@@ -17,6 +17,7 @@ class FlutterLivenessDetectionRandomizedPlugin {
     required bool shuffleListWithSmileLast,
     required bool showCurrentStep,
     required bool isDarkMode,
+    Future<void> Function() ? onLivenessSuccessStep,
   }) async {
     final String? capturedFacePath = await Navigator.of(context).push(
       MaterialPageRoute(
