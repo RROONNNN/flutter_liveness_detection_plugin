@@ -72,8 +72,7 @@ class _HomeViewState extends State<HomeView> {
                     showDurationUiText:
                         false, // show or hide duration remaining when perfoming liveness detection
                     startWithInfoScreen: true, // show or hide tutorial screen
-                    useCustomizedLabel:
-                        false, // set to true value for enable 'customizedLabel', set to false to use default label
+                    useCustomizedLabel: true, // set to true value for enable 'customizedLabel', set to false to use default label
                     // provide an empty string if you want to pass the liveness challenge
                     customizedLabel: LivenessDetectionLabelModel(
                       blink:
@@ -96,6 +95,7 @@ class _HomeViewState extends State<HomeView> {
                 if (mounted) {
                   setState(() {
                     imgPath = response; // result liveness
+                    
                   });
                 }
               },

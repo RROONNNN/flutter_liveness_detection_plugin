@@ -201,6 +201,7 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
     _timerToDetectFace?.cancel();
     _timerToDetectFace = null;
     _cameraController?.dispose();
+    _disposeCamera();
     shuffleListLivenessChallenge(
         list: widget.config.useCustomizedLabel &&
                 widget.config.customizedLabel != null
@@ -270,6 +271,24 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
     });
     _startFaceDetectionTimer();
   }
+  
+void _disposeCamera() async {
+  if (_cameraController != null) {
+    try {
+      await _cameraController?.stopImageStream();
+    } catch (e) {
+      debugPrint('Error stopping image stream: $e');
+    }
+    
+    try {
+      await _cameraController?.dispose();
+    } catch (e) {
+      debugPrint('Error disposing camera: $e');
+    }
+    
+    _cameraController = null;
+  }
+}
 
   void _startFaceDetectionTimer() {
     _timerToDetectFace = Timer(
@@ -295,7 +314,7 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
     if (imageRotation == null) return;
 
     final inputImageFormat =
-        InputImageFormatValue.fromRawValue(cameraImage.format.raw);
+      Platform.isAndroid ? InputImageFormat.nv21: InputImageFormatValue.fromRawValue(cameraImage.format.raw);
     if (inputImageFormat == null) return;
 
     final inputImageData = InputImageMetadata(
@@ -421,24 +440,34 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
     }
   }
 
-  void _onDetectionCompleted({XFile? imgToReturn}) async {
-    final String? imgPath = imgToReturn?.path;
-    final File imageFile = File(imgPath ?? "");
-    final int fileSizeInBytes = await imageFile.length();
-    final double sizeInKb = fileSizeInBytes / 1024;
-    debugPrint('Image result size : ${sizeInKb.toStringAsFixed(2)} KB');
-    if (widget.isEnableSnackBar) {
-      final snackBar = SnackBar(
-        content: Text(imgToReturn == null
-            ? 'Verification of liveness detection failed, please try again. (Exceeds time limit ${widget.config.durationLivenessVerify ?? 45} second.)'
-            : 'Verification of liveness detection success!'),
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+void _onDetectionCompleted({XFile? imgToReturn}) async {
+  final String? imgPath = imgToReturn?.path;
+  
+  // Only calculate file size if imgPath is not null or empty
+  double sizeInKb = 0.0;
+  if (imgPath != null && imgPath.isNotEmpty) {
+    final File imageFile = File(imgPath);
+    if (await imageFile.exists()) {
+      final int fileSizeInBytes = await imageFile.length();
+      sizeInKb = fileSizeInBytes / 1024;
+      debugPrint('Image result size : ${sizeInKb.toStringAsFixed(2)} KB');
     }
-    if (!mounted) return;
-    Navigator.of(context).pop(imgPath);
+  } else {
+    debugPrint('No image to process - detection timeout or failed');
   }
+  
+  if (widget.isEnableSnackBar) {
+    final snackBar = SnackBar(
+      content: Text(imgToReturn == null
+          ? 'Verification of liveness detection failed, please try again. (Exceeds time limit ${widget.config.durationLivenessVerify ?? 45} second.)'
+          : 'Verification of liveness detection success!'),
+    );
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+  if (!mounted) return;
+  Navigator.of(context).pop(imgPath);
+}
 
   void _resetSteps() {
     if (widget.config.useCustomizedLabel) {
