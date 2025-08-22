@@ -17,7 +17,7 @@ class FlutterLivenessDetectionRandomizedPlugin {
     required bool shuffleListWithSmileLast,
     required bool showCurrentStep,
     required bool isDarkMode,
-    Future<void> Function() ? onLivenessSuccessStep,
+    Future<void> Function(String?) ? onLivenessSuccessStep,
   }) async {
     final String? capturedFacePath = await Navigator.of(context).push(
       MaterialPageRoute(
@@ -27,6 +27,7 @@ class FlutterLivenessDetectionRandomizedPlugin {
           shuffleListWithSmileLast: shuffleListWithSmileLast,
           showCurrentStep: showCurrentStep,
           isDarkMode: isDarkMode,
+          onLivenessSuccessStep: onLivenessSuccessStep,
         ),
       ),
     );

@@ -23,6 +23,15 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
   }
 
+Future<void> _onLivenessSuccessStep(String? imagePath) async {
+   debugPrint('Captured !!!');
+    if (imagePath != null) {
+      setState(() {
+        debugPrint('Captured Image Path: $imagePath');
+        capturedImages.add(imagePath);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,30 +40,64 @@ class _HomeViewState extends State<HomeView> {
         shrinkWrap: true,
         padding: const EdgeInsets.all(12),
         children: [
-          if (imgPath != null) ...[
+          if (imgPath != null || capturedImages.isNotEmpty) ...[
             const Text(
               'Result Liveness Detection',
               textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(
-              height: 12,
-            ),
-            Align(
-              child: SizedBox(
-                height: 100,
-                width: 100,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.file(
-                    File(imgPath!),
-                    fit: BoxFit.cover,
+            const SizedBox(height: 12),
+            if (capturedImages.isNotEmpty) ...[
+              const Text(
+                'Captured Step Images:',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  childAspectRatio: 1,
+                ),
+                itemCount: capturedImages.length,
+                itemBuilder: (context, index) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(
+                      File(capturedImages[index]!),
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
+            if (imgPath != null) ...[
+              const Text(
+                'Final Result:',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                child: SizedBox(
+                  height: 120,
+                  width: 120,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.file(
+                      File(imgPath!),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 12,
-            ),
+              const SizedBox(height: 16),
+            ],
           ],
           ElevatedButton.icon(
               icon: const Icon(Icons.camera_alt_rounded),
@@ -62,6 +105,7 @@ class _HomeViewState extends State<HomeView> {
                 final String? response =
                     await FlutterLivenessDetectionRandomizedPlugin.instance
                         .livenessDetection(
+                          onLivenessSuccessStep: _onLivenessSuccessStep,
                   context: context,
                   config: LivenessDetectionConfig(
                     imageQuality: 100, // adjust your image quality result
@@ -76,12 +120,12 @@ class _HomeViewState extends State<HomeView> {
                     // provide an empty string if you want to pass the liveness challenge
                     customizedLabel: LivenessDetectionLabelModel(
                       blink:
-                          '', // add empty string to skip/pass this liveness challenge
-                      lookDown: '',
-                      lookLeft: '',
-                      lookRight: '',
+                          'blink', // add empty string to skip/pass this liveness challenge
+                      lookDown: 'look down',
+                      lookLeft: 'look left',
+                      lookRight: 'look right', // example of customize label name for liveness challenge. it will replace default 'look right',
                       lookUp:
-                          'Tengok Atas', // example of customize label name for liveness challenge. it will replace default 'look up'
+                          'look up', // example of customize label name for liveness challenge. it will replace default 'look up'
                       smile: null, // null value to use default label name
                     ),
                   ),
