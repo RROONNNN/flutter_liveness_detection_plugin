@@ -1,5 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_liveness_detection_randomized_plugin/index.dart';
 import 'package:flutter_liveness_detection_randomized_plugin/src/core/constants/liveness_detection_step_constant.dart';
 import 'package:collection/collection.dart';
@@ -196,6 +197,8 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
   void initState() {
     _preInitCallBack();
     super.initState();
+    // Force portrait orientation when entering LivenessDetectionView
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     WidgetsBinding.instance.addPostFrameCallback((_) => _postFrameCallBack());
   }
 
@@ -216,6 +219,13 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
     if (widget.config.isEnableMaxBrightness) {
       resetApplicationBrightness();
     }
+    // Restore all device orientations when leaving LivenessDetectionView
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     super.dispose();
   }
 
@@ -297,7 +307,39 @@ void _disposeCamera() async {
     _timerToDetectFace = Timer(
         Duration(seconds: widget.config.durationLivenessVerify ?? 45),
         () => _onDetectionCompleted(imgToReturn: null));
-  }
+}
+// Future<int> _getImageRotation(CameraDescription camera) async {
+//   int sensorOrientation = camera.sensorOrientation;
+//   int deviceRotation = 0;
+  
+//   // Get actual device orientation
+//   final orientation = await NativeDeviceOrientationCommunicator().orientation();
+  
+//   switch (orientation) {
+//     case NativeDeviceOrientation.portraitUp:
+//       deviceRotation = 0;
+//       break;
+//     case NativeDeviceOrientation.portraitDown:
+//       deviceRotation = 180;
+//       break;
+//     case NativeDeviceOrientation.landscapeLeft:
+//       deviceRotation = 90;
+//       break;
+//     case NativeDeviceOrientation.landscapeRight:
+//       deviceRotation = 270;
+//       break;
+//     case NativeDeviceOrientation.unknown:
+//       deviceRotation = 0; // fallback
+//       break;
+//   }
+  
+//   // For front camera, adjust rotation differently
+//   if (camera.lensDirection == CameraLensDirection.front) {
+//     return (sensorOrientation + deviceRotation ) % 360;
+//   } else {
+//     return (sensorOrientation - deviceRotation + 360) % 360;
+//   }
+// }
 
   Future<void> _processCameraImage(CameraImage cameraImage) async {
     final WriteBuffer allBytes = WriteBuffer();
