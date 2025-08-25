@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_liveness_detection_randomized_plugin/index.dart';
 import 'package:flutter_liveness_detection_randomized_plugin/src/core/constants/liveness_detection_step_constant.dart';
 import 'package:collection/collection.dart';
+import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
@@ -198,7 +199,7 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
     _preInitCallBack();
     super.initState();
     // Force portrait orientation when entering LivenessDetectionView
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     WidgetsBinding.instance.addPostFrameCallback((_) => _postFrameCallBack());
   }
 
@@ -220,12 +221,12 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
       resetApplicationBrightness();
     }
     // Restore all device orientations when leaving LivenessDetectionView
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+    // SystemChrome.setPreferredOrientations([
+    //   DeviceOrientation.portraitUp,
+    //   DeviceOrientation.portraitDown,
+    //   DeviceOrientation.landscapeLeft,
+    //   DeviceOrientation.landscapeRight,
+    // ]);
     super.dispose();
   }
 
@@ -308,38 +309,39 @@ void _disposeCamera() async {
         Duration(seconds: widget.config.durationLivenessVerify ?? 45),
         () => _onDetectionCompleted(imgToReturn: null));
 }
-// Future<int> _getImageRotation(CameraDescription camera) async {
-//   int sensorOrientation = camera.sensorOrientation;
-//   int deviceRotation = 0;
+Future<int> _getImageRotation(CameraDescription camera) async {
+  int sensorOrientation = camera.sensorOrientation;
+  int deviceRotation = 0;
   
-//   // Get actual device orientation
-//   final orientation = await NativeDeviceOrientationCommunicator().orientation();
+  // Get actual device orientation
+  final orientation = await NativeDeviceOrientationCommunicator().orientation();
   
-//   switch (orientation) {
-//     case NativeDeviceOrientation.portraitUp:
-//       deviceRotation = 0;
-//       break;
-//     case NativeDeviceOrientation.portraitDown:
-//       deviceRotation = 180;
-//       break;
-//     case NativeDeviceOrientation.landscapeLeft:
-//       deviceRotation = 90;
-//       break;
-//     case NativeDeviceOrientation.landscapeRight:
-//       deviceRotation = 270;
-//       break;
-//     case NativeDeviceOrientation.unknown:
-//       deviceRotation = 0; // fallback
-//       break;
-//   }
+  switch (orientation) {
+    case NativeDeviceOrientation.portraitUp:
+      deviceRotation = 0;
+      break;
+    case NativeDeviceOrientation.portraitDown:
+      deviceRotation = 180;
+      break;
+    case NativeDeviceOrientation.landscapeLeft:
+      deviceRotation = 90;
+      break;
+    case NativeDeviceOrientation.landscapeRight:
+      deviceRotation = 270;
+      break;
+    case NativeDeviceOrientation.unknown:
+      deviceRotation = 0; // fallback
+      break;
+  }
   
-//   // For front camera, adjust rotation differently
-//   if (camera.lensDirection == CameraLensDirection.front) {
-//     return (sensorOrientation + deviceRotation ) % 360;
-//   } else {
-//     return (sensorOrientation - deviceRotation + 360) % 360;
-//   }
-// }
+  // For front camera, adjust rotation differently
+  if (camera.lensDirection == CameraLensDirection.front) {
+    return (sensorOrientation + deviceRotation ) % 360;
+  } else {
+    return (sensorOrientation - deviceRotation + 360) % 360;
+  }
+}
+
 
   Future<void> _processCameraImage(CameraImage cameraImage) async {
     final WriteBuffer allBytes = WriteBuffer();
@@ -354,8 +356,9 @@ void _disposeCamera() async {
     );
 
     final camera = availableCams[_cameraIndex];
+    final rotation = await _getImageRotation(camera);
     final imageRotation =
-        InputImageRotationValue.fromRawValue(camera.sensorOrientation);
+        InputImageRotationValue.fromRawValue(rotation);
     if (imageRotation == null) return;
 
     final inputImageFormat =

@@ -20,6 +20,7 @@ dependencies:
   lottie: ^2.4.0
   collection: ^1.18.0
   screen_brightness: ^2.1.2
+  native_device_orientation: ^2.0.3
 
 dependency_overrides:
   camera_android_camerax: 0.6.10+1

@@ -112,18 +112,18 @@ Future<void> _onLivenessSuccessStep(String? imagePath) async {
                     isEnableMaxBrightness:
                         true, // enable disable max brightness when taking face photo
                     durationLivenessVerify:
-                        60, // default duration value is 45 second
+                        20, // default duration value is 45 second
                     showDurationUiText:
                         false, // show or hide duration remaining when perfoming liveness detection
                     startWithInfoScreen: true, // show or hide tutorial screen
-                    useCustomizedLabel: true, // set to true value for enable 'customizedLabel', set to false to use default label
+                    useCustomizedLabel: false, // set to true value for enable 'customizedLabel', set to false to use default label
                     // provide an empty string if you want to pass the liveness challenge
                     customizedLabel: LivenessDetectionLabelModel(
                       blink:
                           'blink', // add empty string to skip/pass this liveness challenge
-                      lookDown: 'look down',
-                      lookLeft: 'look left',
-                      lookRight: 'look right', // example of customize label name for liveness challenge. it will replace default 'look right',
+                      lookDown: ' ',
+                      lookLeft: ' ',
+                      lookRight: ' ', // example of customize label name for liveness challenge. it will replace default 'look right',
                       lookUp:
                           'look up', // example of customize label name for liveness challenge. it will replace default 'look up'
                       smile: null, // null value to use default label name

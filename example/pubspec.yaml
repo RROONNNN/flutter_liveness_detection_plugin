@@ -27,6 +27,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_liveness_detection_randomized_plugin:
     path: ../
+  camera_android: ^0.10.10
 
 dev_dependencies:
   integration_test:
