@@ -13,6 +13,7 @@ class LivenessDetectionStepOverlayWidget extends StatefulWidget {
   final bool isDarkMode;
   final bool showDurationUiText;
   final int? duration;
+  final VoidCallback? handleBack; // New callback for back action 
 
   const LivenessDetectionStepOverlayWidget({
     super.key,
@@ -25,6 +26,7 @@ class LivenessDetectionStepOverlayWidget extends StatefulWidget {
     this.isDarkMode = true,
     this.showDurationUiText = false,
     this.duration,
+    this.handleBack, // Initialize the new callback
   });
 
   @override
@@ -195,7 +197,10 @@ class LivenessDetectionStepOverlayWidgetState
         child: Stack(
           children: [
             GestureDetector(
-              onTap: () => Navigator.pop(context),
+              onTap: () {
+                widget.handleBack?.call();
+                Navigator.of(context).pop();
+              },
               child: widget.showCurrentStep
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -316,7 +321,7 @@ class LivenessDetectionStepOverlayWidgetState
 
   Widget _buildStepPageView() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height / 10,
+      height: MediaQuery.of(context).size.height / 7,
       width: MediaQuery.of(context).size.width,
       child: AbsorbPointer(
         absorbing: true,

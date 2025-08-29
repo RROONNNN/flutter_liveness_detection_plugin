@@ -27,7 +27,6 @@ class LivenessDetectionView extends StatefulWidget {
     this.showCurrentStep = false,
     this.shuffleListWithSmileLast = true,
     this.onLivenessSuccessStep,
-
   });
 
   @override
@@ -41,6 +40,7 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
   bool _isBusy = false;
   bool _isTakingPicture = false;
   Timer? _timerToDetectFace;
+  bool is_reback = false;
 
   // Detection state variables
   late bool _isInfoStepCompleted;
@@ -516,6 +516,10 @@ void _onDetectionCompleted({XFile? imgToReturn}) async {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
   if (!mounted) return;
+  if(is_reback){
+    Navigator.of(context).pop();
+    return;
+  }
   Navigator.of(context).pop(imgPath);
 }
 
@@ -580,6 +584,7 @@ void _onDetectionCompleted({XFile? imgToReturn}) async {
     );
   }
 
+ 
   Widget _buildDetectionBody() {
     if (_cameraController == null ||
         _cameraController?.value.isInitialized == false) {
@@ -609,6 +614,10 @@ void _onDetectionCompleted({XFile? imgToReturn}) async {
             const Duration(milliseconds: 500),
             () => _takePicture(),
           ),
+          handleBack: (){
+              is_reback = true;
+            
+          }
         ),
       ],
     );
