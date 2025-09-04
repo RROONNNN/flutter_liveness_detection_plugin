@@ -247,24 +247,63 @@ class LivenessDetectionStepOverlayWidgetState
   }
 
   Widget _buildBody() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        _buildCircularCamera(),
-        const SizedBox(height: 16),
-        _buildFaceDetectionStatus(),
-        const SizedBox(height: 16),
-        Visibility(
-          visible: _pageViewVisible,
-          replacement: const CircularProgressIndicator.adaptive(),
-          child: _buildStepPageView(),
-        ),
-        const SizedBox(height: 16),
-        widget.isDarkMode ? _buildLoaderDarkMode() : _buildLoaderLightMode(),
-      ],
-    );
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    
+    if (isLandscape) {
+      // Landscape layout: camera on left, steps on right
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Left side: Camera and face detection status
+          Expanded(
+            flex: 1,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildCircularCamera(),
+                const SizedBox(height: 10),
+                _buildFaceDetectionStatus(),
+              ],
+            ),
+          ),
+          // Right side: Step view
+          Expanded(
+            flex: 1,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Visibility(
+                  visible: _pageViewVisible,
+                  replacement: const CircularProgressIndicator.adaptive(),
+                  child: _buildStepPageView(),
+                ),
+                const SizedBox(height: 10),
+                widget.isDarkMode ? _buildLoaderDarkMode() : _buildLoaderLightMode(),
+              ],
+            ),
+          ),
+        ],
+      );
+    } else {
+     
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _buildCircularCamera(),
+          const SizedBox(height: 10),
+          _buildFaceDetectionStatus(),
+          const SizedBox(height: 10),
+          Visibility(
+            visible: _pageViewVisible,
+            replacement: const CircularProgressIndicator.adaptive(),
+            child: _buildStepPageView(),
+          ),
+          widget.isDarkMode ? _buildLoaderDarkMode() : _buildLoaderLightMode(),
+        ],
+      );
+    }
   }
 
   Widget _buildCircularCamera() {
@@ -336,7 +375,7 @@ class LivenessDetectionStepOverlayWidgetState
 
   Widget _buildStepItem(BuildContext context, int index) {
     return Padding(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(8),
       child: Container(
         decoration: BoxDecoration(
           color: widget.isDarkMode ? Colors.black : Colors.white,
@@ -350,7 +389,7 @@ class LivenessDetectionStepOverlayWidgetState
           textAlign: TextAlign.center,
           style: TextStyle(
             color: widget.isDarkMode ? Colors.white : Colors.black,
-            fontSize: 24,
+            fontSize: 18,
             fontWeight: FontWeight.w500,
           ),
         ),
