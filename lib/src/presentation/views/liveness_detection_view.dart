@@ -200,12 +200,12 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
     super.initState();
     // Force portrait orientation when entering LivenessDetectionView
     // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-        SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+    //     SystemChrome.setPreferredOrientations([
+    //   DeviceOrientation.portraitUp,
+    //   DeviceOrientation.portraitDown,
+    //   DeviceOrientation.landscapeLeft,
+    //   DeviceOrientation.landscapeRight,
+    // ]);
     WidgetsBinding.instance.addPostFrameCallback((_) => _postFrameCallBack());
   }
 
