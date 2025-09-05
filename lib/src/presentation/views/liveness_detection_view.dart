@@ -146,12 +146,12 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
     if (!_isShuffled) {
       List<LivenessDetectionStepItem> customizedSteps = [];
 
-      if (label.blink != "" && widget.config.useCustomizedLabel) {
-        customizedSteps.add(LivenessDetectionStepItem(
-          step: LivenessDetectionStep.blink,
-          title: label.blink ?? "Blink 2-3 Times",
-        ));
-      }
+      // if (label.blink != "" && widget.config.useCustomizedLabel) {
+      //   customizedSteps.add(LivenessDetectionStepItem(
+      //     step: LivenessDetectionStep.blink,
+      //     title: label.blink ?? "Blink 2-3 Times",
+      //   ));
+      // }
 
       if (label.lookRight != "" && widget.config.useCustomizedLabel) {
         customizedSteps.add(LivenessDetectionStepItem(
@@ -181,12 +181,12 @@ class _LivenessDetectionScreenState extends State<LivenessDetectionView> {
         ));
       }
 
-      if (label.smile != "" && widget.config.useCustomizedLabel) {
-        customizedSteps.add(LivenessDetectionStepItem(
-          step: LivenessDetectionStep.smile,
-          title: label.smile ?? "Smile",
-        ));
-      }
+      // if (label.smile != "" && widget.config.useCustomizedLabel) {
+      //   customizedSteps.add(LivenessDetectionStepItem(
+      //     step: LivenessDetectionStep.smile,
+      //     title: label.smile ?? "Smile",
+      //   ));
+      // }
       _cachedShuffledSteps = manualRandomItemLiveness(customizedSteps);
       _isShuffled = true;
     }
